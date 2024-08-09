@@ -72,3 +72,76 @@ Expected output:
 Actual output:
 1 2 3 4
 */
+
+//----------------------------------------
+// Binary tree using unique_ptr
+
+#include <iostream>
+#include <stack>
+#include <memory> // unique_ptr
+using namespace std;
+
+struct Node
+{
+    int data;
+    unique_ptr<Node> left;
+    unique_ptr<Node> right;
+
+    Node(int val)
+      : data(val)
+    {}
+};
+
+unique_ptr<Node> Create(int value)
+{
+    return make_unique<Node>(value);
+}
+
+void Inorder(Node* root)
+{
+    stack<Node*> nodeStack;
+
+    Node* current = root;
+
+    do
+    {
+        while (current)
+        {
+            nodeStack.push(current);
+            current = current->left.get();
+        }
+
+        if (!nodeStack.empty())
+        {
+            current = nodeStack.top();
+            nodeStack.pop();
+
+            cout << current->data << " ";
+            current = current->right.get();
+        }
+    } while (current || !nodeStack.empty());
+
+    cout << endl;
+}
+
+int main(int argc, char *argv[])
+{ 
+    {
+        unique_ptr<Node> root = Create(2);
+        root->left = Create(1);
+        root->right = Create(3);
+        root->right->right = Create(4);
+
+        Inorder(root.get());
+    }
+
+    return 0;
+}
+
+/*
+Expected output:
+1 2 3 4
+
+Actual output:
+1 2 3 4
+*/
