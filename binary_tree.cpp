@@ -145,3 +145,92 @@ Expected output:
 Actual output:
 1 2 3 4
 */
+
+//----------------------------------------
+// Given a binary tree, print all root to leaf paths
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+struct Node
+{
+    int data;
+    Node* left;
+    Node* right;
+};
+
+Node* Create(int value)
+{
+    return new Node{value, nullptr, nullptr};
+}
+
+// caller should ensure "current" is not null
+bool isLeaf(const Node* current)
+{
+    return !(current->left || current->right);
+}
+
+// utility function to print one path
+void print(const vector<Node*> & buffer)
+{
+    for (const auto current : buffer)
+    {
+        cout << current->data << " ";
+    }
+    cout << endl;
+}
+
+// In the future we will look into how this can be done without using recursion
+void printRootToLeafPaths(Node* current, vector<Node*> & buffer)
+{
+    if (!current)
+    {
+        return;
+    }
+
+    buffer.push_back(current);
+
+    if (isLeaf(current))
+    {
+        print(buffer);
+    }
+    else 
+    {
+        printRootToLeafPaths(current->left, buffer);
+        printRootToLeafPaths(current->right, buffer);
+    }
+
+    buffer.pop_back();
+}
+
+void printRootToLeafPaths(Node* root)
+{
+    vector<Node*> dummy;
+    printRootToLeafPaths(root, dummy);
+}
+
+int main(int argc, char *argv[])
+{ 
+    {
+        Node* root = Create(2);
+        root->left = Create(1);
+        root->right = Create(3);
+        root->right->right = Create(4);
+
+        printRootToLeafPaths(root);
+    }
+
+    return 0;
+}
+
+/*
+Expected output:
+2 1
+2 3 4
+
+Actual output:
+2 1
+2 3 4
+
+*/
