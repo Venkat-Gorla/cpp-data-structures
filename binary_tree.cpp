@@ -234,3 +234,71 @@ Actual output:
 2 3 4
 
 */
+
+//----------------------------------------
+// preorder traversal without recursion
+
+#include <iostream>
+#include <stack>
+using namespace std;
+
+struct Node
+{
+    int data;
+    Node* left;
+    Node* right;
+};
+
+Node* Create(int value)
+{
+    return new Node{value, nullptr, nullptr};
+}
+
+void preorder(Node* root)
+{
+    if (!root)
+    {
+        return;
+    }
+
+    stack<Node*> nodeStack;
+    nodeStack.push(root);
+
+    while (!nodeStack.empty())
+    {
+        auto current = nodeStack.top();
+        nodeStack.pop();
+        cout << current->data << " ";
+
+        if (current->right)
+            nodeStack.push(current->right);
+
+        if (current->left)
+            nodeStack.push(current->left);
+    }
+
+    cout << endl;
+}
+
+int main(int argc, char *argv[])
+{ 
+    {
+        Node* root = Create(2);
+        root->left = Create(1);
+        root->right = Create(3);
+        root->right->right = Create(4);
+
+        preorder(root);
+    }
+
+    return 0;
+}
+
+/*
+Expected output:
+2 1 3 4
+
+Actual output:
+2 1 3 4
+
+*/
