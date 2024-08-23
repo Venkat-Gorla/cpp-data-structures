@@ -1,6 +1,6 @@
 //----------------------------------------
 // depth first traversal (dfs) of binary tree
-// for a binary tree dfs is the same as preorder traversal
+// for a binary tree, dfs is the same as preorder traversal
 // to illustrate this idea, we will get the connecting path from the root to a key in the binary tree
 
 #include <iostream>
