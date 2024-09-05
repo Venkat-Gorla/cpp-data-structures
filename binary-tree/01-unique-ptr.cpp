@@ -14,6 +14,12 @@ struct Node
     Node(int val)
       : data(val)
     {}
+
+    // this is to ensure the tree gets cleaned up through the unique_ptr
+    ~Node()
+    {
+        cout << "Deleting node with value " << data << endl;
+    }
 };
 
 unique_ptr<Node> Create(int value)
@@ -43,6 +49,7 @@ int main(int argc, char *argv[])
             4  5
 
         */
+
         unique_ptr<Node> root = Create(1);
         root->left = Create(2);
         root->right = Create(3);
@@ -51,17 +58,19 @@ int main(int argc, char *argv[])
 
         cout << "Preorder traversal is ";
         preorder(root.get());
+        cout << endl << endl;
     }
 
     return 0;
 }
 
 /*
-Expected output:
+Output:
 Preorder traversal is 1 2 4 3 5
 
-Actual output:
-Preorder traversal is 1 2 4 3 5
-
+Deleting node with value 1
+Deleting node with value 3
+Deleting node with value 5
+Deleting node with value 2
+Deleting node with value 4
 */
-
