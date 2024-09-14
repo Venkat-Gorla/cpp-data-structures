@@ -2,6 +2,7 @@
 // Binary search tree
 // Topics covered:
 // - tree creation, node insertion with and without recursion
+// - search for a given key inside the bst
 
 #include <iostream>
 #include <vector>
@@ -106,6 +107,24 @@ Node* Create(const vector<int> & input)
     return root;
 }
 
+// search (without recursion) for the given key inside the bst
+bool Contains(Node* root, const int key)
+{
+    auto current{root};
+
+    while (current)
+    {
+        if (current->data == key)
+            return true;
+        else if (key < current->data)
+            current = current->left;
+        else
+            current = current->right;
+    }
+
+    return false;
+}
+
 // for testing
 void Inorder(Node* root)
 {
@@ -117,7 +136,7 @@ void Inorder(Node* root)
     }
 }
 
-void testcase(const vector<int> & input)
+void TestCreation(const vector<int> & input)
 {
     {
         auto root = rCreate(input);
@@ -134,6 +153,26 @@ void testcase(const vector<int> & input)
     }
 }
 
+void TestContains(const vector<int> & input, const vector<int> & keys)
+{
+    auto root = Create(input);
+
+    for (auto key : keys)
+    {
+        if (Contains(root, key))
+        {
+            cout << "Key " << key << " is found inside the tree" << endl;
+        }
+        else
+        {
+            cout << "Key " << key << " is *Not* found inside the tree" << endl;
+        }
+    }
+
+    // just check the code works for an empty tree
+    Contains(nullptr, 100);
+}
+
 int main(int argc, char *argv[])
 { 
     {
@@ -147,7 +186,10 @@ int main(int argc, char *argv[])
         */
 
         const vector<int> input{3, 1, 2, 5, 4};
-        testcase(input);
+        TestCreation(input);
+
+        const vector<int> keys{1, 4, 6};
+        TestContains(input, keys);
     }
 
     return 0;
@@ -157,5 +199,8 @@ int main(int argc, char *argv[])
 Output:
 Inorder traversal of bst created using recursion is 1 2 3 4 5
 Inorder traversal of bst created *WITHOUT* recursion is 1 2 3 4 5
+Key 1 is found inside the tree
+Key 4 is found inside the tree
+Key 6 is *Not* found inside the tree
 
 */
