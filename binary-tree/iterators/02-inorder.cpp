@@ -1,9 +1,14 @@
 //----------------------------------------
 // Inorder iterator
-// this comes very handy when dealing with BST since the nodes will be returned in sorted order
+// - this comes very handy when dealing with BST since the nodes will be returned in sorted order
+// Topics covered
+// - iterator implementation
+// - getting inorder successor with the iterator becomes trivial (almost)
 
 #include <iostream>
+#include <vector>
 #include <stack>
+#include <numeric> // iota
 using namespace std;
 
 struct Node
@@ -66,30 +71,30 @@ class InorderIterator
     // prevent object copy
     InorderIterator(const InorderIterator&) = delete;
 };
+// end InorderIterator
 
-void print(InorderIterator & it)
+// fwd declarations
+void TestIterator(Node* root);
+void print(InorderIterator & it);
+void TestSuccessor(Node* root, const vector<int> & keys);
+// end fwd declarations
+
+// get inorder successor via the iterator
+Node* GetSuccessor(Node* root, const int key)
 {
-    for (auto current = it.next(); current; current = it.next())
+    InorderIterator it(root);
+    auto current = it.next();
+
+    while (current)
     {
-        cout << current->data << " ";
+        const auto prev = current;
+        current = it.next();
+
+        if (prev->data == key)
+            return current;
     }
 
-    cout << endl;
-}
-
-void testcase(Node* root)
-{
-    {
-        cout << "Fwd inorder traversal: ";
-        InorderIterator it(root);
-        print(it);
-    }
-
-    {
-        cout << "Reverse inorder traversal: ";
-        InorderIterator it(root, false);
-        print(it);
-    }
+    return nullptr;
 }
 
 int main(int argc, char *argv[])
@@ -110,16 +115,61 @@ int main(int argc, char *argv[])
         root->left->right = Create(2);
         root->right->left = Create(4);
 
-        testcase(root);
+        TestIterator(root);
+
+        vector<int> keys(4);
+        iota(keys.begin(), keys.end(), 3);
+        TestSuccessor(root, keys);
     }
 
     return 0;
+}
+
+void TestIterator(Node* root)
+{
+    {
+        cout << "Fwd inorder traversal: ";
+        InorderIterator it(root);
+        print(it);
+    }
+
+    {
+        cout << "Reverse inorder traversal: ";
+        InorderIterator it(root, false);
+        print(it);
+    }
+}
+
+void print(InorderIterator & it)
+{
+    for (auto current = it.next(); current; current = it.next())
+    {
+        cout << current->data << " ";
+    }
+
+    cout << endl;
+}
+
+void TestSuccessor(Node* root, const vector<int> & keys)
+{
+    for (auto key : keys)
+    {
+        auto successor = GetSuccessor(root, key);
+        if (successor)
+            cout << "Inorder successor for " << key << " is " << successor->data << endl;
+        else
+            cout << "Inorder successor for " << key << " is *Not* found" << endl;
+    }
 }
 
 /*
 Output:
 Fwd inorder traversal: 1 2 3 4 5
 Reverse inorder traversal: 5 4 3 2 1
+Inorder successor for 3 is 4
+Inorder successor for 4 is 5
+Inorder successor for 5 is *Not* found
+Inorder successor for 6 is *Not* found
 
 */
 
