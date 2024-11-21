@@ -2,7 +2,7 @@
 
 //----------------------------------------
 // - Given a singly linked list, write a function to swap elements pairwise. 
-// - 
+// - both recursive and iterative solutions along with relevant test cases
 
 /*
 For example, if the linked list is 1->2->3->4->5->6->7 then the function should change it to 2->1->4->3->6->5->7, 
@@ -58,7 +58,7 @@ void printList(Node* head)
     cout << endl;
 }
 
-// core solution
+// recursive solution
 Node* pairwiseSwap(Node* head)
 {
     if (head == nullptr || head->next == nullptr)
@@ -73,24 +73,50 @@ Node* pairwiseSwap(Node* head)
     return result;
 }
 
+// iterative solution
+Node* pairwiseSwap_iter(Node* head)
+{
+    if (head == nullptr || head->next == nullptr)
+        return head;
+
+    Node* answer = head->next;
+
+    Node* previous = nullptr;
+    Node* current = head;
+
+    while (current && current->next)
+    {
+        if (previous)
+            previous->next = current->next;
+
+        Node* next = current->next->next;
+        current->next->next = current;
+        current->next = nullptr;
+
+        previous = current;
+        current = next;
+    }
+
+    previous->next = current;
+
+    return answer;
+}
+
 // fwd declarations
 void testPairwiseSwap(const vector<int> & input);
 // end fwd declarations
 
 int main(int argc, char *argv[])
 {
-    {
-        vector<int> input(6);
-        iota(input.begin(), input.end(), 1);
-        testPairwiseSwap(input);
-    }
+    vector<int> listSizes(5);
+    iota(listSizes.begin(), listSizes.end(), 1);
 
+    for (auto listSize : listSizes)
     {
-        // odd case
-        cout << endl;
-        vector<int> input(7);
+        vector<int> input(listSize);
         iota(input.begin(), input.end(), 1);
         testPairwiseSwap(input);
+        cout << endl;
     }
 
     return 0;
@@ -98,22 +124,67 @@ int main(int argc, char *argv[])
 
 void testPairwiseSwap(const vector<int> & input)
 {
-    auto head{createList(input)};
-    printList(head);
+    {
+        auto head{createList(input)};
+        printList(head);
 
-    cout << "List after calling pairwiseSwap()" << endl;
-    head = pairwiseSwap(head);
-    printList(head);
+        cout << "List after calling recursive pairwiseSwap()" << endl;
+        head = pairwiseSwap(head);
+        printList(head);
+    }
+
+    {
+        cout << endl;
+        auto head{createList(input)};
+        printList(head);
+
+        cout << "List after calling iterative pairwiseSwap()" << endl;
+        head = pairwiseSwap_iter(head);
+        printList(head);
+    }
 }
+
 /*
 Output:
-Printing list: 1 2 3 4 5 6
-List after calling pairwiseSwap()
-Printing list: 2 1 4 3 6 5
+Printing list: 1
+List after calling recursive pairwiseSwap()
+Printing list: 1
 
-Printing list: 1 2 3 4 5 6 7
-List after calling pairwiseSwap()
-Printing list: 2 1 4 3 6 5 7
+Printing list: 1
+List after calling iterative pairwiseSwap()
+Printing list: 1
+
+Printing list: 1 2
+List after calling recursive pairwiseSwap()
+Printing list: 2 1
+
+Printing list: 1 2
+List after calling iterative pairwiseSwap()
+Printing list: 2 1
+
+Printing list: 1 2 3
+List after calling recursive pairwiseSwap()
+Printing list: 2 1 3
+
+Printing list: 1 2 3
+List after calling iterative pairwiseSwap()
+Printing list: 2 1 3
+
+Printing list: 1 2 3 4
+List after calling recursive pairwiseSwap()
+Printing list: 2 1 4 3
+
+Printing list: 1 2 3 4
+List after calling iterative pairwiseSwap()
+Printing list: 2 1 4 3
+
+Printing list: 1 2 3 4 5
+List after calling recursive pairwiseSwap()
+Printing list: 2 1 4 3 5
+
+Printing list: 1 2 3 4 5
+List after calling iterative pairwiseSwap()
+Printing list: 2 1 4 3 5
 
 */
 
