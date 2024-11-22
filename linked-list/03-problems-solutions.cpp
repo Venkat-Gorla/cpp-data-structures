@@ -81,6 +81,10 @@ Node* pairwiseSwap_iter(Node* head)
 
     Node* answer = head->next;
 
+    // the core idea is to swap every pair of elements inside the while loop
+    // and establish the connection between the previous pair and the current pair;
+    // if an odd element is present at the end of the list, it will be done outside the loop
+
     Node* previous = nullptr;
     Node* current = head;
 
