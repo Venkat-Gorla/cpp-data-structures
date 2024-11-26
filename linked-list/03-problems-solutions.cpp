@@ -81,7 +81,7 @@ Node* pairwiseSwap_iter(Node* head)
 
     Node* answer = head->next;
 
-    // the core idea is to swap every pair of elements inside the while loop
+    // the idea is to swap every pair of elements inside the while loop
     // and establish the connection between the previous pair and the current pair;
     // if an odd element is present at the end of the list, it will be done outside the loop
 
@@ -193,4 +193,118 @@ Printing list: 2 1 4 3 5
 */
 
 //----------------------------------------
+// - Print alternate nodes of the given Linked List, first from head to end, and then from end to head. 
+
+/*
+If Linked List has even number of nodes, then skip the last node. 
+For Linked List 1->2->3->4->5, print 1 3 5 5 3 1. 
+For Linked List 1->2->3->4->5->6, print 1 3 5 5 3 1.
+*/
+
+#include <iostream>
+#include <vector>
+#include <numeric> // iota
+using namespace std;
+
+struct Node
+{
+    int data;
+    Node* next; // for auto memory management, consider using unique_ptr
+};
+
+Node* create(int value)
+{
+    return new Node{value, nullptr};
+}
+
+Node* createList(const vector<int> & input)
+{
+    Node* head{nullptr};
+    Node* tail{nullptr};
+
+    for (auto value : input)
+    {
+        if (head == nullptr)
+        {
+            head = create(value);
+            tail = head;
+        }
+        else
+        {
+            tail->next = create(value);
+            tail = tail->next;
+        }
+    }
+
+    return head;
+}
+
+void printList(Node* head)
+{
+    cout << "Printing list: ";
+    for (auto current = head; current; current = current->next)
+    {
+        cout << current->data << " ";
+    }
+    cout << endl;
+}
+// end list creation and helper functions
+
+// solution function
+void printAlternate(Node* head)
+{
+    if (!head)
+        return;
+
+    cout << head->data << " ";
+
+    if (head->next)
+        printAlternate(head->next->next);
+
+    cout << head->data << " ";
+}
+
+// fwd declarations
+void testcase(const vector<int> & input);
+// end fwd declarations
+
+int main(int argc, char *argv[])
+{
+    {
+        vector<int> input(5);
+        iota(input.begin(), input.end(), 1);
+        testcase(input);
+    }
+
+    {
+        cout << endl;
+        vector<int> input(6);
+        iota(input.begin(), input.end(), 1);
+        testcase(input);
+    }
+
+    return 0;
+}
+
+void testcase(const vector<int> & input)
+{
+    Node* head{createList(input)};
+    cout << "Input list" << endl;
+    printList(head);
+    cout << "Alternate list: ";
+    printAlternate(head);
+    cout << endl;
+}
+
+/*
+Output:
+Input list
+Printing list: 1 2 3 4 5
+Alternate list: 1 3 5 5 3 1
+
+Input list
+Printing list: 1 2 3 4 5 6
+Alternate list: 1 3 5 5 3 1
+
+*/
 
