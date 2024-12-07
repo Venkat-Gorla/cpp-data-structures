@@ -549,3 +549,149 @@ Printing list: 5 4 3 2 1 9 8 7 6
 
 */
 
+//----------------------------------------
+// - Sort linked list which is already sorted on absolute values
+
+/*
+Given a linked list which is sorted based on absolute values. Sort the list based on actual values.
+Input : 1 -> -2 -> -3 -> 4 -> -5 
+output: -5 -> -3 -> -2 -> 1 -> 4 
+*/
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+struct Node
+{
+    int data;
+    Node* next; // for auto memory management, consider using unique_ptr
+};
+
+Node* create(int value)
+{
+    return new Node{value, nullptr};
+}
+
+Node* createList(const vector<int> & input)
+{
+    Node* head{nullptr};
+    Node* tail{nullptr};
+
+    for (auto value : input)
+    {
+        if (head == nullptr)
+        {
+            head = create(value);
+            tail = head;
+        }
+        else
+        {
+            tail->next = create(value);
+            tail = tail->next;
+        }
+    }
+
+    return head;
+}
+
+void printList(Node* head)
+{
+    cout << "Printing list: ";
+    for (auto current = head; current; current = current->next)
+    {
+        cout << current->data << " ";
+    }
+    cout << endl;
+}
+// end list creation and helper functions
+
+struct ListHelper
+{
+    Node* m_head{nullptr};
+    Node* m_tail{nullptr};
+
+    void prepend(Node* current)
+    {
+        current->next = m_head;
+        m_head = current;
+
+        if (m_tail == nullptr)
+            m_tail = m_head;
+    }
+
+    void append(Node* current)
+    {
+        current->next = nullptr;
+
+        if (m_head == nullptr)
+        {
+            m_head = current;
+            m_tail = current;
+        }
+        else
+        {
+            m_tail->next = current;
+            m_tail = current;
+        }
+    }
+};
+
+// solution function
+// the idea is to walk through the input list and inspect every element;
+// if it is negative, you push at the head and if it is positive, you append at the end.
+// The final output will be sorted that can be returned to the caller
+Node* sortList(Node* head)
+{
+    ListHelper output;
+
+    Node* current{head};
+    while (current)
+    {
+        Node* next{current->next};
+
+        if (current->data < 0)
+            output.prepend(current);
+        else
+            output.append(current);
+
+        current = next;
+    }
+
+    return output.m_head;
+}
+
+// fwd declarations
+void testSortList(const vector<int> & input);
+// end fwd declarations
+
+int main(int argc, char *argv[])
+{
+    {
+        const vector<int> input{0, 1, -2, 3, 4, 5, -5};
+        testSortList(input);
+    }
+
+    return 0;
+}
+
+void testSortList(const vector<int> & input)
+{
+    Node* head{createList(input)};
+    cout << "Input list:" << endl;
+    printList(head);
+
+    head = sortList(head);
+    cout << "Sorted list:" << endl;
+    printList(head);
+}
+
+/*
+Output:
+Input list:
+Printing list: 0 1 -2 3 4 5 -5
+Sorted list:
+Printing list: -5 -2 0 1 3 4 5
+
+*/
+
