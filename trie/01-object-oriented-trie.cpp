@@ -36,10 +36,12 @@ class Trie
     void insertWord(const char* input);
     bool searchWord(const char* input) const;
     vector<string> getSuggestions(const char* prefix) const;
+    void deleteWord(const char* input);
 
   private:
     Node* findFinalNodeForWord(const char* input) const;
     void getSuggestions(Node* current, vector<char> & buffer, vector<string> & output) const;
+    bool deleteWord(Node* current, const char* input);
 };
 
 void Trie::insertWord(const char* input)
@@ -76,6 +78,11 @@ vector<string> Trie::getSuggestions(const char* prefix) const
     return output;
 }
 
+void Trie::deleteWord(const char* input)
+{
+    deleteWord(m_root.get(), input);
+}
+
 Trie::Node* Trie::findFinalNodeForWord(const char* input) const
 {
     Node* current = m_root.get();
@@ -110,11 +117,40 @@ void Trie::getSuggestions(
         buffer.pop_back();
     }
 }
+
+bool Trie::deleteWord(Node* current, const char* input)
+{
+    if (*input == 0)
+    {
+        current->isFinal = false;
+        return current->table.empty();
+    }
+
+    auto it = current->table.find(*input);
+    if (it == current->table.end())
+    {
+        // this means the input word is not found, the Trie remains unchanged in that case
+        return false;
+    }
+
+    const bool canDelete = deleteWord(it->second.get(), input + 1);
+    if (canDelete)
+    {
+        current->table.erase(it);
+        return current->table.empty();
+    }
+
+    return false;
+}
 // end Trie implementation
 
 // fwd declarations
 void testSearch(const Trie & t, const vector<string> & searchInput);
 void testGetSuggestions(const Trie & t, const vector<string> & searchInput);
+void testDeletion(
+    Trie & t, 
+    const vector<string> & deleteInput, 
+    const vector<string> & searchInput);
 // end fwd declarations
 
 int main(int argc, char *argv[])
@@ -138,6 +174,13 @@ int main(int argc, char *argv[])
         cout << endl;
         const vector<string> searchInput{"the", "an"};
         testGetSuggestions(t, searchInput);
+    }
+
+    {
+        cout << endl;
+        const vector<string> deleteInput{"the", "any", "bye"};
+        const vector<string> searchInput{"the", "an", "bye"};
+        testDeletion(t, deleteInput, searchInput);
     }
 
     return 0;
@@ -171,6 +214,21 @@ void testGetSuggestions(const Trie & t, const vector<string> & searchInput)
     }
 }
 
+void testDeletion(
+    Trie & t, 
+    const vector<string> & deleteInput, 
+    const vector<string> & searchInput)
+{
+    for (const auto & word : deleteInput)
+    {
+        cout << "Deleting \"" << word << "\" from Trie" << endl;
+        t.deleteWord(word.c_str());
+    }
+
+    cout << endl << "Printing suggestions after deletion" << endl;
+    testGetSuggestions(t, searchInput);
+}
+
 /*
 Output:
 Test case for search words
@@ -182,6 +240,16 @@ by --- *Not* present in Trie
 Test case for get suggestions
 Suggestions for prefix "the" --> the their there
 Suggestions for prefix "an" --> any answer
+
+Deleting "the" from Trie
+Deleting "any" from Trie
+Deleting "bye" from Trie
+
+Printing suggestions after deletion
+Test case for get suggestions
+Suggestions for prefix "the" --> their there
+Suggestions for prefix "an" --> answer
+Suggestions for prefix "bye" -->
 
 */
 
