@@ -97,4 +97,110 @@ Input sum: 5
 */
 
 //----------------------------------------
+// - Question: Lets say someone accidentally deleted all the whitespace from a sentence. Write a program to reconstruct the sentence from that stripped out string. Assume you have access to a dictionary function that returns if a given string is a valid word or not. 
+
+// If multiple solutions are possible, any one valid solution should be given. If a sentence cannot be formed, print an error message.
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <iterator> // ostream_iterator
+using namespace std;
+
+// Note: this solution uses backtracking and brute force technique, we will
+// consider how to better solve it using Trie
+const char* WORD_TABLE[] {"this", "is", "a", "valid", "sentence", 
+    "with", "sample", "backtrack", "which", "requires", "straightforward", "question", 
+    "the", "here", "we", "go"};
+
+bool isWord(const std::string& input)
+{
+    for (auto word : WORD_TABLE)
+    {
+        if (0 == input.compare(word))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void printSolution(const vector<string> & solution)
+{
+    std::copy(solution.begin(), solution.end(), ostream_iterator<string>(cout, " "));
+    cout << endl;
+}
+
+// solution function
+bool getSentence(const char* input, vector<string> & solution)
+{
+    if (*input == 0)
+    {
+        return true;
+    }
+
+    // consider every possible word than can be formed with the current input
+    // and try to make a sentence out of it
+    for (int index = 0; input[index] != 0; index++)
+    {
+        string temp(input, input + index + 1);
+        if (isWord(temp))
+        {
+            solution.push_back(std::move(temp));
+            if (getSentence(input + index + 1, solution))
+            {
+                return true;
+            }
+
+            solution.pop_back();
+        }
+    }
+
+    return false;
+}
+
+// fwd declarations
+void testcase(const char* input);
+// end fwd declarations
+
+int main(int argc, char *argv[])
+{
+    const char* samples[] = {"straightforwardquestion", "herewego", "herere"};
+    for (auto s : samples)
+    {
+        testcase(s);
+        cout << endl;
+    }
+
+    return 0;
+}
+
+// "input" is 0 terminated
+void testcase(const char* input)
+{
+    cout << "Input: \"" << input << "\"" << endl;
+    vector<string> solution;
+    if (getSentence(input, solution))
+    {
+        printSolution(solution);
+    }
+    else
+    {
+        cout << "No solution found" << endl;
+    }
+}
+
+/*
+Output:
+Input: "straightforwardquestion"
+straightforward question
+
+Input: "herewego"
+here we go
+
+Input: "herere"
+No solution found
+
+*/
 
