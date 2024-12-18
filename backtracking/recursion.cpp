@@ -204,3 +204,67 @@ No solution found
 
 */
 
+//----------------------------------------
+// - Generate and print all subsets for a given set
+
+#include <iostream>
+#include <vector>
+#include <iterator> // ostream_iterator
+using namespace std;
+
+void printSubset(const vector<int> & buffer)
+{
+    cout << "[ ";
+    std::copy(buffer.begin(), buffer.end(), ostream_iterator<int>(cout, " "));
+    cout << "]" << endl;
+}
+
+void printSubsets(
+    const vector<int> & input,
+    const int index,
+    vector<int> & buffer)
+{
+    if (index == (int)input.size())
+    {
+        printSubset(buffer);
+        return;
+    }
+
+    printSubsets(input, index + 1, buffer);
+
+    buffer.push_back(input[index]);
+    printSubsets(input, index + 1, buffer);
+    buffer.pop_back();
+}
+
+// fwd declarations
+void testcase(const vector<int> & input);
+// end fwd declarations
+
+int main(int argc, char *argv[])
+{
+    const vector<int> input{4, 6, 8};
+    testcase(input);
+
+    return 0;
+}
+
+void testcase(const vector<int> & input)
+{
+    vector<int> buffer;
+    printSubsets(input, 0, buffer);
+}
+
+/*
+Output:
+[ ]
+[ 8 ]
+[ 6 ]
+[ 6 8 ]
+[ 4 ]
+[ 4 8 ]
+[ 4 6 ]
+[ 4 6 8 ]
+
+*/
+
